@@ -71,33 +71,33 @@ Before you begin, ensure you have the following:
 
 ### Step 1: Clone the Repository
 
-\`\`\`bash
+```bash
 git clone https://github.com/babanla123/the-vault.git
 cd the-vault
-\`\`\`
+```
 
 ### Step 2: Install Dependencies
 
-\`\`\`bash
+```bash
 npm install
 # or
 yarn install
-\`\`\`
+```
 
 ### Step 3: Verify Installation
 
-\`\`\`bash
+```bash
 npm run type-check
-\`\`\`
+```
 
 ## Environment Setup
 
 ### Step 1: Create Environment File
 
-\`\`\`bash
+```bash
 # Copy the example file
 cp .env.example .env.local
-\`\`\`
+```
 
 ### Step 2: Configure IPFS Provider
 
@@ -113,9 +113,9 @@ Choose **ONE** of the following options:
 6. Copy the token
 7. Add to `.env.local`:
 
-\`\`\`env
+```env
 NEXT_PUBLIC_WEB3_STORAGE_TOKEN=your_token_here
-\`\`\`
+```
 
 #### Option B: Pinata
 
@@ -126,28 +126,28 @@ NEXT_PUBLIC_WEB3_STORAGE_TOKEN=your_token_here
 5. Copy your API Key and Secret
 6. Add to `.env.local`:
 
-\`\`\`env
+```env
 NEXT_PUBLIC_PINATA_API_KEY=your_key_here
 NEXT_PUBLIC_PINATA_API_SECRET=your_secret_here
-\`\`\`
+```
 
 ### Step 3: Configure Solana Network
 
 Update `.env.local` with:
 
-\`\`\`env
+```env
 NEXT_PUBLIC_SOLANA_NETWORK=devnet
 NEXT_PUBLIC_RPC_ENDPOINT=https://api.devnet.solana.com
 NEXT_PUBLIC_APP_URL=http://localhost:3000
-\`\`\`
+```
 
 ### Step 4: Deploy Smart Contract (Next Section)
 
 After deploying the contract, add:
 
-\`\`\`env
+```env
 NEXT_PUBLIC_VAULT_PROGRAM_ID=your_program_id_here
-\`\`\`
+```
 
 ## Smart Contract Deployment
 
@@ -173,15 +173,15 @@ NEXT_PUBLIC_VAULT_PROGRAM_ID=your_program_id_here
 
 #### Install Anchor
 
-\`\`\`bash
+```bash
 cargo install --git https://github.com/coral-xyz/anchor avm --locked --force
 avm install latest
 avm use latest
-\`\`\`
+```
 
 #### Setup Local Environment
 
-\`\`\`bash
+```bash
 # Configure Solana CLI
 solana config set --url https://api.devnet.solana.com
 
@@ -190,11 +190,11 @@ solana-keygen new
 
 # Check balance
 solana balance
-\`\`\`
+```
 
 #### Deploy Contract
 
-\`\`\`bash
+```bash
 cd contract
 
 # Build
@@ -205,11 +205,11 @@ anchor deploy --provider.cluster devnet
 
 # Run tests
 anchor test --provider.cluster devnet
-\`\`\`
+```
 
 #### Extract Program ID
 
-\`\`\`bash
+```bash
 # Find Program ID in:
 # 1. Output of 'anchor deploy'
 # 2. contract/Anchor.toml [provider]
@@ -217,40 +217,40 @@ anchor test --provider.cluster devnet
 
 # Copy Program ID to .env.local
 NEXT_PUBLIC_VAULT_PROGRAM_ID=YOUR_PROGRAM_ID
-\`\`\`
+```
 
 ## Running the Application
 
 ### Development Server
 
-\`\`\`bash
+```bash
 npm run dev
-\`\`\`
+```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ### Production Build
 
-\`\`\`bash
+```bash
 npm run build
 npm start
-\`\`\`
+```
 
 ### Type Checking
 
-\`\`\`bash
+```bash
 npm run type-check
-\`\`\`
+```
 
 ### Linting
 
-\`\`\`bash
+```bash
 npm run lint
-\`\`\`
+```
 
 ## Project Structure
 
-\`\`\`
+```
 the-vault/
 ├── app/
 │   ├── page.tsx                 # Home page
@@ -303,7 +303,7 @@ the-vault/
 ├── tsconfig.json                # TypeScript config
 ├── next.config.mjs              # Next.js config
 └── tailwind.config.ts           # Tailwind CSS config
-\`\`\`
+```
 
 ## Usage Guide
 
@@ -439,7 +439,7 @@ the-vault/
 
 #### IPFS Service (`services/ipfs.ts`)
 
-\`\`\`typescript
+```typescript
 // Upload file to IPFS
 await uploadToIPFS(file: File): Promise<string>
 // Returns: IPFS CID
@@ -447,11 +447,11 @@ await uploadToIPFS(file: File): Promise<string>
 // Get IPFS gateway URL
 getIPFSGatewayUrl(cid: string): string
 // Returns: Full IPFS gateway URL
-\`\`\`
+```
 
 #### Solana Service (`services/solana.ts`)
 
-\`\`\`typescript
+```typescript
 // Connect to wallet
 await connectWallet(): Promise<string>
 // Returns: Wallet address
@@ -473,7 +473,7 @@ await deleteAssetFromChain(
   walletAddress: string
 ): Promise<string>
 // Returns: Transaction signature
-\`\`\`
+```
 
 ### Smart Contract Instructions
 
