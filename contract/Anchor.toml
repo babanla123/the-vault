@@ -1,0 +1,19 @@
+[build]
+shell = "/bin/bash"
+
+[features]
+seeds = false
+init-if-needed = true
+
+[programs.devnet]
+the_vault = "11111111111111111111111111111111"
+
+[programs.localnet]
+the_vault = "11111111111111111111111111111111"
+
+[provider]
+cluster = "devnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+test = "yarn run ts-mocha --timeout 1000000 tests/**/*.ts"

@@ -1,0 +1,58 @@
+{
+  "version": "0.1.0",
+  "name": "the_vault",
+  "instructions": [
+    {
+      "name": "registerAsset",
+      "accounts": [
+        { "name": "assetRegistry", "isMut": true, "isSigner": false },
+        { "name": "owner", "isMut": true, "isSigner": true },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": [
+        { "name": "cid", "type": "string" },
+        { "name": "name", "type": "string" },
+        { "name": "description", "type": "string" },
+        { "name": "fileType", "type": "string" },
+        { "name": "fileSize", "type": "u64" }
+      ]
+    },
+    {
+      "name": "deleteAsset",
+      "accounts": [
+        { "name": "assetRegistry", "isMut": true, "isSigner": false },
+        { "name": "owner", "isMut": true, "isSigner": true }
+      ],
+      "args": [{ "name": "cid", "type": "string" }]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "AssetRegistry",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "owner", "type": "publicKey" },
+          { "name": "assetCount", "type": "u32" },
+          { "name": "assets", "type": { "vec": { "defined": "AssetRecord" } } },
+          { "name": "bump", "type": "u8" }
+        ]
+      }
+    },
+    {
+      "name": "AssetRecord",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "cid", "type": "string" },
+          { "name": "name", "type": "string" },
+          { "name": "description", "type": "string" },
+          { "name": "fileType", "type": "string" },
+          { "name": "fileSize", "type": "u64" },
+          { "name": "timestamp", "type": "i64" },
+          { "name": "owner", "type": "publicKey" }
+        ]
+      }
+    }
+  ]
+}
