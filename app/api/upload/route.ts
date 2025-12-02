@@ -1,9 +1,9 @@
 import { type NextRequest, NextResponse } from "next/server"
-
 /**
  * Server-side API route for secure IPFS file uploads
  * Handles Web3.Storage and Pinata uploads with server-side credentials
  */
+export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
 
     try {
       // Try Web3.Storage first
-      const web3StorageToken = process.env.WEB3_STORAGE_TOKEN
+      const web3StorageToken = process.env.NEXT_PUBLIC_WEB3_STORAGE_TOKEN
       if (web3StorageToken) {
         const cid = await uploadToWeb3Storage(file, web3StorageToken)
         return NextResponse.json({ cid, success: true })
@@ -26,20 +26,14 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-      // Try Pinata
-      const pinataKey = process.env.PINATA_API_KEY
-      const pinataSecret = process.env.PINATA_API_SECRET
-      if (pinataKey && pinataSecret) {
-        const cid = await uploadToPinata(file, pinataKey, pinataSecret)
-        return NextResponse.json({ cid, success: true })
-      }
+      const cid = await uploadToPinata(file)
+      return NextResponse.json({ cid, success: true })
     } catch (pinataError) {
+      const errorMessage = pinataError instanceof Error ? pinataError.message : "Unknown error occurred"
       console.warn("[Pinata] Upload failed, using mock:", pinataError)
+      return NextResponse.json({ error: "Failed to upload to pinata", details: errorMessage,  })
     }
 
-    const mockCID = "QmX" + Math.random().toString(36).substring(7).padEnd(42, "X").substring(0, 44)
-    console.log(`[Mock IPFS] Uploaded ${file.name} with CID: ${mockCID}`)
-    return NextResponse.json({ cid: mockCID, success: true, mock: true })
   } catch (error) {
     console.error("[Upload Route] Error:", error)
     const errorMessage = error instanceof Error ? error.message : "Unknown error occurred"
@@ -51,7 +45,7 @@ async function uploadToWeb3Storage(file: File, token: string): Promise<string> {
   const formData = new FormData()
   formData.append("file", file)
 
-  const response = await fetch("https://api.web3.storage/upload", {
+  const response = await fetch(`https://api.web3.storage/upload`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -76,15 +70,15 @@ async function uploadToWeb3Storage(file: File, token: string): Promise<string> {
   return data.cid
 }
 
-async function uploadToPinata(file: File, apiKey: string, apiSecret: string): Promise<string> {
+async function uploadToPinata(file: File): Promise<string> {
   const formData = new FormData()
   formData.append("file", file)
+  formData.append("network", "public")
 
-  const response = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
+  const response = await fetch("https://uploads.pinata.cloud/v3/files", {
     method: "POST",
     headers: {
-      pinata_api_key: apiKey,
-      pinata_secret_api_key: apiSecret,
+      Authorization: `Bearer ${process.env.PINATA_JWT!}`,
     },
     body: formData,
   })
@@ -99,9 +93,9 @@ async function uploadToPinata(file: File, apiKey: string, apiSecret: string): Pr
     throw new Error("Invalid response type from Pinata")
   }
 
-  const data = await response.json()
-  if (!data.IpfsHash) {
+  const { data } = await response.json()
+  if (!data.cid) {
     throw new Error("No IpfsHash returned from Pinata")
   }
-  return data.IpfsHash
+  return data.cid
 }

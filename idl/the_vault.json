@@ -1,41 +1,116 @@
 {
   "version": "0.1.0",
   "name": "the_vault",
+  "address":"CArUiBgaHH6ooWBw9UNbcZNicenByQeS7yvdswZjKzXx",
   "instructions": [
+    {
+      "name": "initializeCounter",
+      "accounts": [
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "counterRegistry",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
     {
       "name": "registerAsset",
       "accounts": [
-        { "name": "assetRegistry", "isMut": true, "isSigner": false },
-        { "name": "owner", "isMut": true, "isSigner": true },
-        { "name": "systemProgram", "isMut": false, "isSigner": false }
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "counterRegistry",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "assetRecord",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
       ],
       "args": [
-        { "name": "cid", "type": "string" },
-        { "name": "name", "type": "string" },
-        { "name": "description", "type": "string" },
-        { "name": "fileType", "type": "string" },
-        { "name": "fileSize", "type": "u64" }
+        {
+          "name": "cid",
+          "type": "string"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "type": "string"
+        },
+        {
+          "name": "fileType",
+          "type": "string"
+        },
+        {
+          "name": "fileSize",
+          "type": "u64"
+        }
       ]
     },
     {
       "name": "deleteAsset",
       "accounts": [
-        { "name": "assetRegistry", "isMut": true, "isSigner": false },
-        { "name": "owner", "isMut": true, "isSigner": true }
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "assetRecord",
+          "isMut": true,
+          "isSigner": false
+        }
       ],
-      "args": [{ "name": "cid", "type": "string" }]
+      "args": [
+        {
+          "name": "index",
+          "type": "u32"
+        }
+      ]
     }
   ],
   "accounts": [
     {
-      "name": "AssetRegistry",
+      "name": "CounterRegistry",
       "type": {
         "kind": "struct",
         "fields": [
-          { "name": "owner", "type": "publicKey" },
-          { "name": "assetCount", "type": "u32" },
-          { "name": "assets", "type": { "vec": { "defined": "AssetRecord" } } },
-          { "name": "bump", "type": "u8" }
+          {
+            "name": "owner",
+            "type": "publicKey"
+          },
+          {
+            "name": "count",
+            "type": "u32"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
         ]
       }
     },
@@ -44,15 +119,76 @@
       "type": {
         "kind": "struct",
         "fields": [
-          { "name": "cid", "type": "string" },
-          { "name": "name", "type": "string" },
-          { "name": "description", "type": "string" },
-          { "name": "fileType", "type": "string" },
-          { "name": "fileSize", "type": "u64" },
-          { "name": "timestamp", "type": "i64" },
-          { "name": "owner", "type": "publicKey" }
+          {
+            "name": "owner",
+            "type": "publicKey"
+          },
+          {
+            "name": "index",
+            "type": "u32"
+          },
+          {
+            "name": "cid",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "name": "fileType",
+            "type": "string"
+          },
+          {
+            "name": "fileSize",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
         ]
       }
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidCID",
+      "msg": "Invalid CID format or length."
+    },
+    {
+      "code": 6001,
+      "name": "InvalidName",
+      "msg": "Invalid asset name or length."
+    },
+    {
+      "code": 6002,
+      "name": "InvalidDescription",
+      "msg": "Invalid description length."
+    },
+    {
+      "code": 6003,
+      "name": "InvalidFileType",
+      "msg": "Invalid file type or length."
+    },
+    {
+      "code": 6004,
+      "name": "AssetNotFound",
+      "msg": "Asset not found."
+    },
+    {
+      "code": 6005,
+      "name": "Unauthorized",
+      "msg": "Unauthorized: Only asset owner can perform this action."
     }
   ]
 }

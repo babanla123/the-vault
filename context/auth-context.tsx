@@ -21,17 +21,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Check if user is already authenticated (persisted in localStorage)
     const checkAuth = async () => {
       try {
         const storedUser = localStorage.getItem("vault_user")
         if (storedUser) {
           const parsedUser = JSON.parse(storedUser)
           setUser(parsedUser)
-          document.cookie = `vault_user=${JSON.stringify(parsedUser)}; path=/`
+          console.log("[v0] Auth restored from localStorage for:", parsedUser.id)
         }
       } catch (err) {
-        console.error("Failed to restore authentication:", err)
+        console.error("[v0] Failed to restore authentication:", err)
       } finally {
         setLoading(false)
       }
@@ -48,9 +47,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         walletAddress: walletAddress,
         isAuthenticated: true,
       }
+
       setUser(newUser)
+
       localStorage.setItem("vault_user", JSON.stringify(newUser))
-      document.cookie = `vault_user=${JSON.stringify(newUser)}; path=/`
+
+      const response = await fetch("/api/auth/set-cookie", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user: newUser }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to set authentication cookie")
+      }
+
+      console.log("[v0] User logged in:", newUser.id)
+    } catch (error) {
+      console.error("[v0] Login error:", error)
+      setUser(null)
+      localStorage.removeItem("vault_user")
+      throw error
     } finally {
       setLoading(false)
     }
@@ -61,7 +78,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(true)
       setUser(null)
       localStorage.removeItem("vault_user")
-      document.cookie = "vault_user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC"
+
+      await fetch("/api/auth/logout", {
+        method: "POST",
+      }).catch(() => {
+        // Ignore errors during logout
+      })
+
+      console.log("[v0] User logged out")
     } finally {
       setLoading(false)
     }
